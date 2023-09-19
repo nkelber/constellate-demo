@@ -18,20 +18,13 @@ from streamlit.logger import get_logger
 LOGGER = get_logger(__name__)
 
 
+
 def run():
     st.set_page_config(
         page_title="Constellate Demos"     
     )
     import constellate
     st.sidebar.success("Select a demo above.")
-    dataset_id = st.text_input('Constellate Dataset ID')
-    info = constellate.get_description(dataset_id)
-    if 'search_description' in info:
-        st.write(info['search_description'])
-        st.write('1500 documents sample of ', str(info['num_documents']), ' documents.')
-        with st.spinner(text='Downloading...'):
-            dataset_file = constellate.get_dataset(dataset_id)
-        st.markdown('*Load a new dataset by entering a different dataset ID*')
         
 
 if __name__ == "__main__":
