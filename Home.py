@@ -23,11 +23,12 @@ def run():
     st.set_page_config(
         page_title="Constellate Demos"     
     )
-    dataset_id = st.sidebar.text_input('Constellate Dataset ID')
+    # dataset_id = "7e41317e-740f-e86a-4729-20dab492e925"
+    dataset_id = st.sidebar.text_input('Constellate Dataset ID', value='7e41317e-740f-e86a-4729-20dab492e925')
     st.session_state['dataset_id'] = dataset_id
     info = constellate.get_description(dataset_id)
     if 'search_description' in info:
-        st.sidebar.write('Dataset loaded.')
+        st.sidebar.write('\u2713 Dataset loaded')
 
     st.sidebar.success("Select a demo above.")
         

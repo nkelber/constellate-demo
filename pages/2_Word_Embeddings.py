@@ -10,7 +10,7 @@ Pre-trained vectors based on Wikipedia 2014 + Gigaword, 5.6B tokens, 400K vocab,
          ''')
 
 
-@st.cache_data
+@st.cache_data(show_spinner="Loading embeddings...")
 def load_embeddings():
         model = gensim.downloader.load('glove-wiki-gigaword-100')
         return model

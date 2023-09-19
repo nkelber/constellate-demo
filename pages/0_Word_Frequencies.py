@@ -35,53 +35,13 @@ def gather_unigrams():
                 continue
             word_freq[clean_gram] += count
             return word_freq
-        
-# Load the NLTK stopwords list
-from nltk.corpus import stopwords
-import nltk
-nltk.download('stopwords')
-stop_words = stopwords.words('english')
 
-st.markdown('# Exploring Word Frequencies')
-
-# dataset_id = st.text_input('Constellate Dataset ID')
-# info = constellate.get_description(dataset_id)
-dataset_id = st.session_state['dataset_id']
-info = constellate.get_description(dataset_id)
-
-# # Check to see if a dataset file exists
-# # If not, download a dataset using the Constellate Client
-# # The default dataset is Shakespeare Quarterly, 1950-present
-# dataset_id = "7e41317e-740f-e86a-4729-20dab492e925"
-if 'search_description' in info:
-    st.write(info['search_description'])
-    st.write('1500 documents sample of ', str(info['num_documents']), ' documents.')
-    st.divider()
-    with st.spinner(text='Downloading...'):
-        dataset_file = constellate.get_dataset(dataset_id)
-    
-    
-    word_frequency = Counter()
-    with st.spinner(text='Counting words...'):
-        for document in constellate.dataset_reader(dataset_file):
-            unigrams = document.get("unigramCount", [])
-            for gram, count in unigrams.items():
-                clean_gram = gram.lower()
-                if clean_gram in stop_words:
-                    continue
-                if not clean_gram.isalpha():
-                    continue
-                if len(clean_gram) < 4:
-                    continue
-                word_frequency[clean_gram] += count
-    
-    st.markdown(' ## Most Common Words')
+def find_common_words():
     for gram, count in word_frequency.most_common(10):
-        st.write(gram.ljust(20), count)
-    else:
-        pass
-    st.markdown('## Wordcloud')
+        st.write(gram, count)
 
+
+def generate_wordcloud():
     ### Download cloud image for our word cloud shape ###
     # It is not required to have a shape to create a word cloud
     download_url = 'https://ithaka-labs.s3.amazonaws.com/static-files/images/tdm/tdmdocs/sample_cloud.png'
@@ -115,8 +75,69 @@ if 'search_description' in info:
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
     st.pyplot(plt.gcf())
+
+@st.cache_data(show_spinner="Counting words...")
+def count_words():
+    word_frequency = Counter()
+    for document in constellate.dataset_reader(dataset_file):
+        unigrams = document.get("unigramCount", [])
+        for gram, count in unigrams.items():
+            clean_gram = gram.lower()
+            if clean_gram in stop_words:
+                continue
+            if not clean_gram.isalpha():
+                continue
+            if len(clean_gram) < 4:
+                continue
+            word_frequency[clean_gram] += count
+    return word_frequency
+        
+# Load the NLTK stopwords list
+from nltk.corpus import stopwords
+import nltk
+nltk.download('stopwords')
+stop_words = stopwords.words('english')
+
+st.markdown('# Exploring Word Frequencies')
+
+dataset_id = st.session_state['dataset_id']
+info = constellate.get_description(dataset_id)
+
+# Download dataset
+
+if 'search_description' in info:
+    st.write(info['search_description'])
+    st.write('1500 documents sample of ', str(info['num_documents']), ' documents.')
+
+    dataset_file = constellate.get_dataset(dataset_id)
+    st.session_state['dataset_file'] = dataset_file
+    
+    word_frequency = count_words()
+ 
+
+
 else:
     st.markdown('*Enter Dataset ID to visualize*')
 
+viz = st.radio('',
+
+    ["Common Words", "Wordcloud"],
+    captions = ["Find 10 most common words", "Visualize the most common words"])
+
+st.divider()
+
+if viz == 'Common Words':
+    find_common_words()
+elif viz == 'Wordcloud':
+    generate_wordcloud()
 
 
+
+
+
+# if st.button('Find Most Common Words'):
+#     find_common_words()
+    
+
+# if st.button('Generate Wordcloud'):
+#     generate_wordcloud()
