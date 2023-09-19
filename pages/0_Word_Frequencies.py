@@ -114,8 +114,6 @@ if 'search_description' in info:
     
     word_frequency = count_words()
  
-
-
 else:
     st.markdown('*Enter Dataset ID to visualize*')
 
@@ -126,18 +124,10 @@ viz = st.radio('',
 
 st.divider()
 
-if viz == 'Common Words':
-    find_common_words()
-elif viz == 'Wordcloud':
-    generate_wordcloud()
+if 'search_description' in info:
 
+    if viz == 'Common Words':
+        find_common_words()
 
-
-
-
-# if st.button('Find Most Common Words'):
-#     find_common_words()
-    
-
-# if st.button('Generate Wordcloud'):
-#     generate_wordcloud()
+    elif viz == 'Wordcloud':
+        generate_wordcloud()
