@@ -44,7 +44,9 @@ stop_words = stopwords.words('english')
 
 st.markdown('# Exploring Word Frequencies')
 
-dataset_id = st.text_input('Constellate Dataset ID')
+# dataset_id = st.text_input('Constellate Dataset ID')
+# info = constellate.get_description(dataset_id)
+dataset_id = st.session_state['dataset_id']
 info = constellate.get_description(dataset_id)
 
 # # Check to see if a dataset file exists
@@ -114,7 +116,7 @@ if 'search_description' in info:
     plt.axis("off")
     st.pyplot(plt.gcf())
 else:
-    pass
+    st.markdown('*Enter Dataset ID to visualize*')
 
 
 

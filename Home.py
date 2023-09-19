@@ -14,16 +14,21 @@
 
 import streamlit as st
 from streamlit.logger import get_logger
+import constellate
 
 LOGGER = get_logger(__name__)
-
-
+    
 
 def run():
     st.set_page_config(
         page_title="Constellate Demos"     
     )
-    import constellate
+    dataset_id = st.sidebar.text_input('Constellate Dataset ID')
+    st.session_state['dataset_id'] = dataset_id
+    info = constellate.get_description(dataset_id)
+    if 'search_description' in info:
+        st.sidebar.write('Dataset loaded.')
+
     st.sidebar.success("Select a demo above.")
         
 
