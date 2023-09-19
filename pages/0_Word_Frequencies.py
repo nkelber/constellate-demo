@@ -42,29 +42,26 @@ from nltk.corpus import stopwords
 import nltk
 nltk.download('stopwords')
 stop_words = stopwords.words('english')
-st.write('Using NLTK Stopwords list.')
+
+st.markdown('# Exploring Word Frequencies')
 
 dataset_id = st.text_input('Constellate Dataset ID')
-
-
+info = constellate.get_description(dataset_id)
 
 # # Check to see if a dataset file exists
 # # If not, download a dataset using the Constellate Client
 # # The default dataset is Shakespeare Quarterly, 1950-present
 # dataset_id = "7e41317e-740f-e86a-4729-20dab492e925"
-if dataset_id:
-
-    info = constellate.get_description(dataset_id)
-    
-    
-    st.markdown('*Dataset description:* ')
-    st.write('1500 documents sampled from ', info['num_documents'])
+if 'search_description' in info:
     st.write(info['search_description'])
+    st.write('1500 documents sample of ', str(info['num_documents']), ' documents.')
+    st.divider()
     with st.spinner(text='Downloading...'):
         dataset_file = constellate.get_dataset(dataset_id)
+    
+    
     word_frequency = Counter()
     with st.spinner(text='Counting words...'):
-        
         for document in constellate.dataset_reader(dataset_file):
             unigrams = document.get("unigramCount", [])
             for gram, count in unigrams.items():
@@ -77,11 +74,11 @@ if dataset_id:
                     continue
                 word_frequency[clean_gram] += count
     
-    st.markdown('# Word Frequency Results')
-    st.markdown('## Most Common Words')
+    st.markdown(' ## Most Common Words')
     for gram, count in word_frequency.most_common(10):
         st.write(gram.ljust(20), count)
-    
+    else:
+        pass
     st.markdown('## Wordcloud')
 
     ### Download cloud image for our word cloud shape ###

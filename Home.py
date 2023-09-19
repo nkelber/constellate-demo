@@ -22,9 +22,7 @@ def run():
     st.set_page_config(
         page_title="Constellate Demo"     
     )
-
     st.write("# Constellate Demos")
-
     st.sidebar.success("Select a demo above.")
 
     st.markdown(
