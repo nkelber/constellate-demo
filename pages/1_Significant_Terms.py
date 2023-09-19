@@ -21,22 +21,8 @@ def process_token(token):
         return None
     return token # If all are False, return the lowercased token
 
-st.markdown('# Significant Terms')
-
-dataset_id = st.text_input('Constellate Dataset ID')
-info = constellate.get_description(dataset_id)
-
-# # Check to see if a dataset file exists
-# # If not, download a dataset using the Constellate Client
-# # The default dataset is Shakespeare Quarterly, 1950-present
-# dataset_id = "7e41317e-740f-e86a-4729-20dab492e925"
-if 'search_description' in info:
-    st.write(info['search_description'])
-    st.write('1500 documents sample of ', str(info['num_documents']), ' documents.')
-    st.divider()
-    with st.spinner(text='Downloading...'):
-        dataset_file = constellate.get_dataset(dataset_id)
-    
+@st.cache_data(show_spinner="Finding significant terms...")
+def find_significant_terms():
     documents = [] # A list that will contain all of our unigrams
     document_ids = [] # A list that will contain all of our document ids
     document_titles = [] # A list that will contain all of our titles
@@ -76,6 +62,32 @@ if 'search_description' in info:
         if len(doc) < 1:
             continue
         word_id, score = max(doc, key=lambda x: x[1])
-        st.write(document_ids[n], dictionary.get(word_id), score)
+        
+
+
+        # st.write(document_titles[n], document_ids[n], dictionary.get(word_id), score)
+        st.write(f'[{document_titles[n]}]({document_ids[n]})', dictionary.get(word_id), score)
+
         if n >= 10:
             break
+
+st.markdown('# Significant Terms')
+
+dataset_id = st.session_state['dataset_id']
+info = constellate.get_description(dataset_id)
+
+# # Check to see if a dataset file exists
+# # If not, download a dataset using the Constellate Client
+# # The default dataset is Shakespeare Quarterly, 1950-present
+# dataset_id = "7e41317e-740f-e86a-4729-20dab492e925"
+if 'search_description' in info:
+    st.write(info['search_description'])
+    st.write('1500 documents sample of ', str(info['num_documents']), ' documents.')
+    st.divider()
+    
+    dataset_file = constellate.get_dataset(dataset_id)
+    st.session_state['dataset_file'] = dataset_file
+
+    find_significant_terms()
+else:
+    st.markdown('*Enter Dataset ID to visualize*')
