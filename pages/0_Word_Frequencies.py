@@ -53,10 +53,18 @@ dataset_id = st.text_input('Constellate Dataset ID')
 # # The default dataset is Shakespeare Quarterly, 1950-present
 # dataset_id = "7e41317e-740f-e86a-4729-20dab492e925"
 if dataset_id:
-    dataset_file = constellate.get_dataset(dataset_id)
-    st.write(f'Dataset {dataset_id} downloaded.')
+
+    info = constellate.get_description(dataset_id)
+    
+    
+    st.markdown('*Dataset description:* ')
+    st.write('1500 documents sampled from ', info['num_documents'])
+    st.write(info['search_description'])
+    with st.spinner(text='Downloading...'):
+        dataset_file = constellate.get_dataset(dataset_id)
     word_frequency = Counter()
     with st.spinner(text='Counting words...'):
+        
         for document in constellate.dataset_reader(dataset_file):
             unigrams = document.get("unigramCount", [])
             for gram, count in unigrams.items():
@@ -68,9 +76,11 @@ if dataset_id:
                 if len(clean_gram) < 4:
                     continue
                 word_frequency[clean_gram] += count
+    
+    st.markdown('# Word Frequency Results')
     st.markdown('## Most Common Words')
     for gram, count in word_frequency.most_common(10):
-        st.write(gram.ljust(20), count, end='')
+        st.write(gram.ljust(20), count)
     
     st.markdown('## Wordcloud')
 
